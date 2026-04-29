@@ -146,9 +146,10 @@ function createFlightCard(flight) {
                     </p>
                 </div>
 
-                <a href="#" class="tm-recommended-price-box">
-                    <p class="tm-recommended-price">$${Math.floor(Math.random() * 500 + 200)}</p>
-                    <p class="tm-recommended-price-link">Continue Reading</p>
+<a href="html/flight-details.html?id=${flight.id}" class="tm-recommended-price-box">
+    <p class="tm-recommended-price">$${Math.floor(Math.random() * 500 + 200)}</p>
+    <p class="tm-recommended-price-link">View Flight</p>
+</a>
                 </a>
             </div>
         </div>

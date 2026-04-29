@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookings</title>
+
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/templatemo-style.css">
+    <link rel="stylesheet" href="../css/user-bookings.css">
+</head>
+
+<body>
+<div class="tm-page-wrap mx-auto">
+
+    <div class="tm-top-bar">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg narbar-light">
+
+                <a class="navbar-brand mr-auto" href="../index.html">
+                    <img src="../img/logo.png" alt="Site logo">
+                    Flight Booking
+                </a>
+
+                <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#mainNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div id="mainNav" class="collapse navbar-collapse tm-bg-white">
+                    <ul class="navbar-nav ml-auto align-items-lg-center">
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">Home</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link active" href="user-bookings.html">My Bookings</a>
+                        </li>
+
+                      
+<li class="nav-item dropdown notification-nav">
+    <a class="nav-link notification-bell dropdown-toggle" href="#" id="notificationDropdown"
+       role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-bell"></i>
+        <span class="notification-count">3</span>
+    </a>
+
+    <div class="dropdown-menu dropdown-menu-right notification-dropdown" aria-labelledby="notificationDropdown">
+        <a class="dropdown-item notification-item" href="notification-center.html?id=1">
+            <strong>Payment confirmed</strong>
+            <span>Your booking to Bangkok is confirmed.</span>
+        </a>
+
+        <a class="dropdown-item notification-item" href="notification-center.html?id=2">
+            <strong>Pending payment</strong>
+            <span>Your Paris booking is waiting for payment.</span>
+        </a>
+
+        <a class="dropdown-item notification-item" href="notification-center.html?id=3">
+            <strong>Flight reminder</strong>
+            <span>Your Tokyo flight departs soon.</span>
+        </a>
+
+        <div class="dropdown-divider"></div>
+
+        <a class="dropdown-item text-center notification-view-all" href="notification-center.html">
+            View all notifications
+        </a>
+    </div>
+</li>
+
+                        <li class="nav-item">
+                            <a class="nav-link user-name" href="#">
+                                <i class="fa fa-user"></i> Ali
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </nav>
+        </div>
+    </div>
+
+    <div class="tm-top-bar-bg"></div>
+
+    <main class="user-page-wrapper">
+
+        <section class="user-header-box">
+            <h1>My Bookings</h1>
+            <p>View and manage your upcoming flight bookings.</p>
+        </section>
+
+        <section class="booking-summary-row row">
+            <div class="col-md-4">
+                <div class="summary-card">
+                    <h3>3</h3>
+                    <p>Active Bookings</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="summary-card">
+                    <h3>1</h3>
+                    <p>Pending Payment</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="summary-card">
+                    <h3>2</h3>
+                    <p>Notifications</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="bookingsContainer">
+            <!-- JS renders bookings here -->
+        </section>
+
+    </main>
+
+    <footer class="tm-container-outer">
+        <p class="mb-0">
+            Copyright © <span class="tm-current-year"></span> Flight Booking
+        </p>
+    </footer>
+
+</div>
+
+<script src="../js/jquery-1.11.3.min.js"></script>
+<script src="../js/popper.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script src="../js/user-bookings.js"></script>
+
+</body>
+</html>
