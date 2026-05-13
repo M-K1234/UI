@@ -150,7 +150,7 @@ function createFlightCard(flight) {
     <p class="tm-recommended-price">$${Math.floor(Math.random() * 500 + 200)}</p>
     <p class="tm-recommended-price-link">View Flight</p>
 </a>
-                </a>
+
             </div>
         </div>
         <br>

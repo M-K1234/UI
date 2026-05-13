@@ -42,23 +42,40 @@ http://www.templatemo.com/tm-511-journey
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div id="mainNav" class="collapse navbar-collapse tm-bg-white">
-                                <ul class="navbar-nav ml-auto">
-                                  <li class="nav-item">
-                                    <a class="nav-link active" href="#top">Home <span class="sr-only">(current)</span></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#tm-section-2">Find flight</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#tm-section-3">About us</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#tm-section-4">Support</a>
-                                </li>
-                                <li class="nav-item">
-                                     <a class="nav-link" href="html/user-bookings.html">My Bookings</a>
-                                </li>
-                            </ul>
+                               <ul class="navbar-nav ml-auto">
+
+    <li class="nav-item">
+        <a class="nav-link active" href="#top">
+            Home
+            <span class="sr-only">(current)</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#tm-section-search">
+            Find flight
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#tm-section-3">
+            About us
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link external" href="pages/signup.html">
+            Signup
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link external" href="pages/login.html">
+            Login
+        </a>
+    </li>
+
+</ul>
                         </div>                            
                     </nav>
                 </div> <!-- row -->
@@ -319,10 +336,11 @@ http://www.templatemo.com/tm-511-journey
             var pickerCheckOut = datepicker('#inputCheckOut');
 
             // Update nav links on scroll
-            $('#tm-top-bar').singlePageNav({
-                currentClass:'active',
-                offset: 60
-            });
+$('#tm-top-bar').singlePageNav({
+    currentClass: 'active',
+    offset: 60,
+    filter: ':not(.external)'
+});
 
             // Close navbar after clicked
             $('.nav-link').click(function(){
