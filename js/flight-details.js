@@ -1,121 +1,9 @@
-const flights = [
-  {
-    id: 1,
-    departure_time: "2018-04-18 13:00:00",
-    arrival_time: "2018-04-19 15:00:00",
-    departure_country: "Denmark",
-    departure_city: "Copenhagen",
-    departure_airport: "CPH",
-    arrival_country: "Thailand",
-    arrival_city: "Bangkok",
-    arrival_airport: "BKK",
-    arrival_continent: "asia",
-    departure_airport_logo: "cph.png",
-    arrival_airport_logo: "bkk.png"
-  },
-  {
-    id: 2,
-    departure_time: "2018-04-19 09:30:00",
-    arrival_time: "2018-04-19 10:45:00",
-    departure_country: "Denmark",
-    departure_city: "Copenhagen",
-    departure_airport: "CPH",
-    arrival_country: "Germany",
-    arrival_city: "Berlin",
-    arrival_airport: "BER",
-    arrival_continent: "europe",
-    departure_airport_logo: "cph.png",
-    arrival_airport_logo: "ber.png"
-  },
-  {
-    id: 3,
-    departure_time: "2018-04-20 07:15:00",
-    arrival_time: "2018-04-20 09:30:00",
-    departure_country: "Denmark",
-    departure_city: "Copenhagen",
-    departure_airport: "CPH",
-    arrival_country: "France",
-    arrival_city: "Paris",
-    arrival_airport: "CDG",
-    arrival_continent: "europe",
-    departure_airport_logo: "cph.png",
-    arrival_airport_logo: "cdg.jpg"
-  },
-  {
-    id: 4,
-    departure_time: "2018-04-21 14:00:00",
-    arrival_time: "2018-04-21 15:10:00",
-    departure_country: "Denmark",
-    departure_city: "Copenhagen",
-    departure_airport: "CPH",
-    arrival_country: "UK",
-    arrival_city: "London",
-    arrival_airport: "LHR",
-    arrival_continent: "europe",
-    departure_airport_logo: "cph.png",
-    arrival_airport_logo: "lhr.png"
-  },
-  {
-    id: 5,
-    departure_time: "2018-04-22 11:20:00",
-    arrival_time: "2018-04-22 14:50:00",
-    departure_country: "Denmark",
-    departure_city: "Copenhagen",
-    departure_airport: "CPH",
-    arrival_country: "Spain",
-    arrival_city: "Madrid",
-    arrival_airport: "MAD",
-    arrival_continent: "europe",
-    departure_airport_logo: "cph.png",
-    arrival_airport_logo: "mad.svg"
-  },
-  {
-    id: 6,
-    departure_time: "2018-04-23 16:40:00",
-    arrival_time: "2018-04-23 19:30:00",
-    departure_country: "Denmark",
-    departure_city: "Copenhagen",
-    departure_airport: "CPH",
-    arrival_country: "Italy",
-    arrival_city: "Rome",
-    arrival_airport: "FCO",
-    arrival_continent: "europe",
-    departure_airport_logo: "cph.png",
-    arrival_airport_logo: "fco.png"
-  },
-  {
-    id: 7,
-    departure_time: "2018-04-24 12:00:00",
-    arrival_time: "2018-04-24 15:30:00",
-    departure_country: "Denmark",
-    departure_city: "Copenhagen",
-    departure_airport: "CPH",
-    arrival_country: "USA",
-    arrival_city: "New York",
-    arrival_airport: "JFK",
-    arrival_continent: "north-america",
-    departure_airport_logo: "cph.png",
-    arrival_airport_logo: "jfk.jpg"
-  },
-  {
-    id: 8,
-    departure_time: "2018-04-25 10:00:00",
-    arrival_time: "2018-04-26 08:00:00",
-    departure_country: "Denmark",
-    departure_city: "Copenhagen",
-    departure_airport: "CPH",
-    arrival_country: "Japan",
-    arrival_city: "Tokyo",
-    arrival_airport: "HND",
-    arrival_continent: "asia",
-    departure_airport_logo: "cph.png",
-    arrival_airport_logo: "hnd.svg"
-  }
-];
+const API_URL = "http://localhost:5000/graphql";
 
 function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleString("en-GB", {
+    if (!dateStr) return "Unknown";
+
+    return new Date(dateStr).toLocaleString("en-GB", {
         hour: "2-digit",
         minute: "2-digit",
         day: "2-digit",
@@ -126,14 +14,83 @@ function formatDate(dateStr) {
 
 function getFlightIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    return Number(params.get("id"));
+    return params.get("id");
 }
 
-function renderFlightDetails() {
-    const flightId = getFlightIdFromUrl();
-    const flight = flights.find(f => f.id === flightId);
+function getAirportCode(value) {
+    if (!value) return "";
+    const match = value.match(/\((.*?)\)/);
+    return match ? match[1] : value;
+}
 
+async function fetchFlightById(id) {
+    const token = localStorage.getItem("access_token");
+
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+            query: `
+                query {
+                    flights {
+                        id
+                        flightNumber
+                        airline
+                        origin
+                        destination
+                        status
+                        direction
+                        scheduledDeparture
+                        scheduledArrival
+                        delayReason
+                        gate {
+                            gateNumber
+                            terminal
+                        }
+                    }
+                }
+            `
+        })
+    });
+
+    const result = await response.json();
+
+    if (result.errors) {
+        console.error("GraphQL errors:", result.errors);
+    }
+
+    const flights = result.data?.flights || [];
+
+    return flights.find(f => f.id === id);
+}
+
+async function renderFlightDetails() {
+    const flightId = getFlightIdFromUrl();
     const container = document.getElementById("flightDetails");
+
+    if (!flightId) {
+        container.innerHTML = `
+            <h2>Missing flight ID</h2>
+            <a href="../index.html" class="btn btn-primary mt-3">Back to flights</a>
+        `;
+        return;
+    }
+
+    let flight;
+
+    try {
+        flight = await fetchFlightById(flightId);
+    } catch (error) {
+        container.innerHTML = `
+            <h2>Could not load flight</h2>
+            <p>${error.message}</p>
+            <a href="../index.html" class="btn btn-primary mt-3">Back to flights</a>
+        `;
+        return;
+    }
 
     if (!flight) {
         container.innerHTML = `
@@ -143,87 +100,170 @@ function renderFlightDetails() {
         return;
     }
 
-    const price = Math.floor(Math.random() * 500 + 200);
-container.innerHTML = `
-    <div class="mb-3">
-        <button onclick="goBack()" class="btn btn-primary">
-            <i class="fa fa-arrow-left"></i> Back
-        </button>
-    </div>
+    const originCode = getAirportCode(flight.origin);
+    const destinationCode = getAirportCode(flight.destination);
 
-    <div class="flight-header">
-        <h1 class="flight-route-title">
-            ${flight.departure_city} → ${flight.arrival_city}
-        </h1>
-        <span class="flight-badge">${flight.arrival_continent}</span>
-    </div>
+    const gateText = flight.gate
+        ? `Gate ${flight.gate.gateNumber}, Terminal ${flight.gate.terminal}`
+        : "Gate not assigned";
 
-    <div class="row flight-info-box">
-        <div class="col-md-3 text-center">
-            <img src="../img/${flight.departure_airport_logo}" class="flight-airport-logo">
-            <h5 class="mt-3">${flight.departure_airport}</h5>
+    container.innerHTML = `
+        <div class="mb-3">
+            <button onclick="goBack()" class="btn btn-primary">
+                <i class="fa fa-arrow-left"></i> Back
+            </button>
         </div>
 
-        <div class="col-md-6">
-            <h3>Flight Information</h3>
+        <div class="flight-header">
+            <h1 class="flight-route-title">
+                ${flight.origin} → ${flight.destination}
+            </h1>
+            <span class="flight-badge">${flight.status}</span>
+        </div>
 
-            <div class="flight-meta">
-                <p><i class="fa fa-plane"></i>
-                    ${flight.departure_city}, ${flight.departure_country}
-                </p>
+        <div class="row flight-info-box">
+            <div class="col-md-3 text-center">
+                <img src="../img/cph.png" class="flight-airport-logo">
+                <h5 class="mt-3">${originCode}</h5>
+            </div>
 
-                <p><i class="fa fa-map-marker"></i>
-                    ${flight.arrival_city}, ${flight.arrival_country}
-                </p>
+            <div class="col-md-6">
+                <h3>${flight.flightNumber} - ${flight.airline}</h3>
 
-                <p><i class="fa fa-clock-o"></i>
-                    Departure: ${formatDate(flight.departure_time)}
-                </p>
+                <div class="flight-meta">
+                    <p><i class="fa fa-plane"></i> From: ${flight.origin}</p>
+                    <p><i class="fa fa-map-marker"></i> To: ${flight.destination}</p>
+                    <p><i class="fa fa-clock-o"></i> Departure: ${formatDate(flight.scheduledDeparture)}</p>
+                    <p><i class="fa fa-clock-o"></i> Arrival: ${formatDate(flight.scheduledArrival)}</p>
+                    <p><i class="fa fa-info-circle"></i> Direction: ${flight.direction}</p>
+                    <p><i class="fa fa-map-signs"></i> ${gateText}</p>
+                    ${flight.delayReason ? `<p><i class="fa fa-warning"></i> Delay reason: ${flight.delayReason}</p>` : ""}
+                </div>
+            </div>
 
-                <p><i class="fa fa-clock-o"></i>
-                    Arrival: ${formatDate(flight.arrival_time)}
-                </p>
+            <div class="col-md-3 text-center">
+                <img src="../img/plane.png" class="flight-airport-logo">
+                <h5 class="mt-3">${destinationCode}</h5>
             </div>
         </div>
 
-        <div class="col-md-3 text-center">
-            <img src="../img/${flight.arrival_airport_logo}" class="flight-airport-logo">
-            <h5 class="mt-3">${flight.arrival_airport}</h5>
+        <div class="booking-box">
+            <h2>${flight.status}</h2>
+            <p>Secure your seat now.</p>
+
+            <button class="btn-book-flight" onclick="createBooking('${flight.id}')">
+                Buy Ticket
+            </button>
         </div>
-    </div>
 
-    <div class="booking-box">
-        <h2>$${price}</h2>
-        <p>Secure your seat now.</p>
-
-        <button class="btn-book-flight" onclick="createBooking(${flight.id})">
-            Buy Ticket
-        </button>
-    </div>
-
-    <div class="text-center mt-4">
-        <a href="../index.html" class="btn btn-primary">
-            Browse more flights
-        </a>
-    </div>
-`;
+        <div class="text-center mt-4">
+            <a href="../index.html" class="btn btn-primary">
+                Browse more flights
+            </a>
+        </div>
+    `;
 }
 
-function createBooking(flightId) {
-    alert("Booking created for flight ID: " + flightId);
+async function createBooking(flightId) {
+    const token = localStorage.getItem("access_token");
+    const user = JSON.parse(localStorage.getItem("user_info") || "{}");
 
-    // Senere kan du ændre den til fx:
-    // window.location.href = `/booking.html?flightId=${flightId}`;
+    if (!token) {
+        alert("You must be logged in to buy a ticket.");
+        window.location.href = "login.html";
+        return;
+    }
 
-    // Eller kalde backend:
-    // fetch("/api/bookings", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ flightId })
-    // });
+    try {
+
+        // ── Create booking ───────────────────────────────
+        const bookingRequest = {
+            flightId: flightId,
+            returnFlightId: null,
+            isOneWay: true,
+            seatClass: 0,
+            contactEmail: user.email || "test@example.com",
+            contactPhone: "+4512345678",
+            ticketPrice: 500,
+            passengers: [
+                {
+                    firstName: user.given_name || "Test",
+                    lastName: user.family_name || "User",
+                    dateOfBirth: "1995-01-01T00:00:00Z",
+                    passportNumber: "TEST123456",
+                    nationality: "Denmark",
+                    isLeadPassenger: true,
+                    hasExtraBaggage: false
+                }
+            ]
+        };
+
+        const bookingResponse = await fetch("http://localhost:5000/api/Booking", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(bookingRequest)
+        });
+
+     const bookingText = await bookingResponse.text();
+
+console.log("Booking status:", bookingResponse.status);
+console.log("Booking response:", bookingText);
+
+if (!bookingResponse.ok) {
+    alert("Booking failed: " + bookingResponse.status + " - " + bookingText);
+    return;
 }
 
-document.querySelector(".tm-current-year").textContent = new Date().getFullYear();
+        const booking = JSON.parse(bookingText);
+
+        console.log("Booking created:", booking);
+
+        // ── Create Stripe checkout ──────────────────────
+        const paymentResponse = await fetch(
+            "http://localhost:5000/api/payment/stripe/checkout",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    BookingId: booking.bookingId,
+                    UserId: user.sub,
+                    TotalPrice: booking.totalPrice,
+                    ContactEmail: bookingRequest.contactEmail,
+                    ContactPhone: bookingRequest.contactPhone
+                })
+            }
+        );
+
+        const paymentText = await paymentResponse.text();
+
+        if (!paymentResponse.ok) {
+            console.error("Payment error:", paymentText);
+            alert("Payment failed: " + paymentText);
+            return;
+        }
+
+        const payment = JSON.parse(paymentText);
+
+        console.log("Payment session:", payment);
+
+        if (!payment.url) {
+            alert("Stripe checkout URL missing.");
+            return;
+        }
+
+        // ── Redirect to Stripe ──────────────────────────
+        window.location.href = payment.url;
+
+    } catch (error) {
+        console.error(error);
+        alert("Unexpected error: " + error.message);
+    }
+}
 
 function goBack() {
     if (document.referrer) {
@@ -233,4 +273,9 @@ function goBack() {
     }
 }
 
-renderFlightDetails();
+document.addEventListener("DOMContentLoaded", () => {
+    const year = document.querySelector(".tm-current-year");
+    if (year) year.textContent = new Date().getFullYear();
+
+    renderFlightDetails();
+});

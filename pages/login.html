@@ -133,12 +133,12 @@
         <h1>Welcome Back</h1>
 
         <p>
-          Continue with Google, Microsoft, GitHub or another provider through Keycloak.
+          Continue with Google through Keycloak.
         </p>
 
-        <a id="keycloakLoginBtn" class="login-btn" href="#">
+        <button id="keycloakLoginBtn" class="login-btn" type="button">
           Continue to login
-        </a>
+        </button>
 
         <a class="login-small-link" href="../index.html">
           Back to home
@@ -160,21 +160,76 @@
   <script src="../js/bootstrap.min.js"></script>
 
   <script>
-    const keycloakBaseUrl = "http://localhost:8080";
+    const keycloakBase = "http://localhost:8080";
     const realm = "airport-system";
     const clientId = "airport-frontend";
-    const redirectUri = "http://localhost:5000";
+    const redirectUri = "http://localhost:5500/pages/callback.html";
 
-    const loginUrl =
-      `${keycloakBaseUrl}/realms/${realm}/protocol/openid-connect/auth` +
-      `?client_id=${encodeURIComponent(clientId)}` +
-      `&response_type=code` +
-      `&scope=openid` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}`;
+    console.log("LOGIN SCRIPT LOADED:", window.location.href);
+    console.log("LOGIN ORIGIN:", window.location.origin);
 
-    document.getElementById("keycloakLoginBtn").href = loginUrl;
+    function base64UrlEncode(buffer) {
+      return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+    }
 
-    $(".tm-current-year").text(new Date().getFullYear());
+    function randomString(length = 64) {
+      const array = new Uint8Array(length);
+      crypto.getRandomValues(array);
+      return base64UrlEncode(array);
+    }
+
+    async function sha256(text) {
+      const encoder = new TextEncoder();
+      return await crypto.subtle.digest("SHA-256", encoder.encode(text));
+    }
+
+    async function loginWithKeycloak(event) {
+      event.preventDefault();
+
+      console.log("LOGIN FUNCTION STARTED");
+
+      const codeVerifier = randomString(64);
+      const hashed = await sha256(codeVerifier);
+      const codeChallenge = base64UrlEncode(hashed);
+
+      localStorage.setItem("pkce_code_verifier", codeVerifier);
+
+      document.cookie =
+        "pkce_code_verifier=" +
+        encodeURIComponent(codeVerifier) +
+        "; Path=/; Max-Age=300; SameSite=Lax";
+
+      console.log(
+        "PKCE SAVED:",
+        localStorage.getItem("pkce_code_verifier")
+      );
+
+      console.log("COOKIE:", document.cookie);
+
+      const authUrl =
+        `${keycloakBase}/realms/${realm}/protocol/openid-connect/auth?` +
+new URLSearchParams({
+  client_id: clientId,
+  response_type: "code",
+  scope: "openid profile email",
+  redirect_uri: redirectUri,
+  code_challenge: codeChallenge,
+  code_challenge_method: "S256",
+  kc_idp_hint: "google",
+  prompt: "select_account"
+}).toString();
+
+      console.log("REDIRECTING TO:", authUrl);
+
+      window.location.href = authUrl;
+    }
+
+    document
+      .getElementById("keycloakLoginBtn")
+      .addEventListener("click", loginWithKeycloak);
   </script>
 </body>
 </html>

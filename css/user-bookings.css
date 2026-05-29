@@ -244,3 +244,16 @@
         width: 100%;
     }
 }
+
+#bookingModal {
+    z-index: 20000;
+}
+
+.modal-backdrop {
+    z-index: 19999;
+}
+
+#bookingModal .modal-dialog {
+    max-width: 700px;
+    margin: 160px auto 30px auto;
+}
