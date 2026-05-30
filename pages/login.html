@@ -163,7 +163,7 @@
     const keycloakBase = "http://localhost:8080";
     const realm = "airport-system";
     const clientId = "airport-frontend";
-    const redirectUri = "http://localhost:5500/pages/callback.html";
+   const redirectUri = `${window.location.origin}/pages/callback.html`;
 
     console.log("LOGIN SCRIPT LOADED:", window.location.href);
     console.log("LOGIN ORIGIN:", window.location.origin);
