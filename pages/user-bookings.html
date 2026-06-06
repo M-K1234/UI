@@ -361,7 +361,8 @@ allPayments = payments;
 
       const passengers = booking.passengers?.length || 0;
       const bookingId = booking.id || booking.bookingId || "N/A";
-      const price = booking.ticketPrice || payment?.amount || 0;
+    const rawPrice = booking.ticketPrice || payment?.amount || 0;
+const price = Number(rawPrice) / 100;
 
       container.innerHTML += `
         <div class="user-booking-card">
@@ -389,7 +390,10 @@ allPayments = payments;
           <div class="booking-action-box">
 
             <div class="booking-price">
-              ${price} DKK
+              ${price.toLocaleString("da-DK", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+})} DKK
             </div>
 
             <button class="booking-btn" onclick="viewBooking('${bookingId}')">
@@ -416,7 +420,8 @@ function viewBooking(id) {
 
   const passengers = booking.passengers?.length || 0;
   const paymentStatus = payment?.status || "NO PAYMENT";
-  const price = booking.ticketPrice || payment?.amount || 0;
+const rawPrice = booking.ticketPrice || payment?.amount || 0;
+const price = Number(rawPrice) / 100;
 
   document.getElementById("bookingModalBody").innerHTML = `
     <p><strong>Booking ID:</strong> ${booking.id || booking.bookingId || "N/A"}</p>
@@ -426,7 +431,10 @@ function viewBooking(id) {
     <p><strong>Email:</strong> ${booking.contactEmail || "N/A"}</p>
     <p><strong>Phone:</strong> ${booking.contactPhone || "N/A"}</p>
     <p><strong>Payment:</strong> ${paymentStatus}</p>
-    <p><strong>Price:</strong> ${price} DKK</p>
+    <p><strong>Price:</strong> ${price.toLocaleString("da-DK", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+})} DKK</p>
   `;
 
   $("#bookingModal").modal("show");

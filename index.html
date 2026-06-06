@@ -51,17 +51,7 @@ http://www.templatemo.com/tm-511-journey
         </a>
     </li>
 
-    <li class="nav-item">
-        <a class="nav-link" href="#tm-section-search">
-            Find flight
-        </a>
-    </li>
 
-    <li class="nav-item">
-        <a class="nav-link" href="#tm-section-3">
-            About us
-        </a>
-    </li>
 
 <!-- LOGGED OUT -->
 
@@ -136,20 +126,27 @@ http://www.templatemo.com/tm-511-journey
 
         <div class="tm-page-wrap mx-auto">
             <section class="tm-banner">
-                <div class="tm-container-outer tm-banner-bg">
+                   <div class="tm-container-outer tm-banner-bg">
                     <div class="container">
 
-                        <div class="row tm-banner-row tm-banner-row-header">
-                            <div class="col-xs-12">
-                                <div class="tm-banner-header">
-                                    <h1 class="text-uppercase tm-banner-title">Begin your journey</h1>
-                                    <img src="img/dots-3.png" alt="Dots">
-                                    <p class="tm-banner-subtitle">We will help you to make the best choice.</p>
-                                    <a href="javascript:void(0)" class="tm-down-arrow-link"><i class="fa fa-2x fa-angle-down tm-down-arrow"></i></a>       
-                                </div>    
-                            </div>  <!-- col-xs-12 -->                      
-                        </div> <!-- row -->
-                        <div class="row tm-banner-row" id="tm-section-search">
+<div class="row tm-banner-row tm-banner-row-header">
+    <div class="col-xs-12">
+        <div class="tm-banner-header">
+
+            <h1 class="text-uppercase tm-banner-title">
+                Airport Management System
+            </h1>
+
+            <img src="img/dots-3.png" alt="Dots">
+
+            <p class="tm-banner-subtitle">
+                Flight booking, baggage handling and payment processing
+            </p>
+
+        </div>
+    </div>
+</div>
+                  <!--    <div class="row tm-banner-row" id="tm-section-search">
 
                             <form action="index.html" method="get" class="tm-search-form tm-section-pad-2">
                                 <div class="form-row tm-search-form-row">                                
@@ -205,7 +202,7 @@ http://www.templatemo.com/tm-511-journey
                                             </select>                                        
                                         </div>
                                     </div>
-                                </div> <!-- form-row -->
+                                </div> 
                                 <div class="form-row tm-search-form-row">
 
                                     <div class="form-group tm-form-group tm-form-group-pad tm-form-group-3">
@@ -223,10 +220,10 @@ http://www.templatemo.com/tm-511-journey
                                 </div>                              
                             </form>                             
 
-                        </div> <!-- row -->
-                        <div class="tm-banner-overlay"></div>
-                    </div>  <!-- .container -->                   
-                </div>     <!-- .tm-container-outer -->                 
+                        </div>  -->   
+                        <div class="tm-banner-overlay"></div>  
+                    </div>                   
+                </div>        
             </section>
 
             
@@ -379,13 +376,13 @@ http://www.templatemo.com/tm-511-journey
             });
 
             // Smooth scroll to search form
-            $('.tm-down-arrow-link').click(function(){
-                $.scrollTo('#tm-section-search', 300, {easing:'linear'});
-            });
+            // $('.tm-down-arrow-link').click(function(){
+            //     $.scrollTo('#tm-section-search', 300, {easing:'linear'});
+            // });
 
             // Date Picker in Search form
-            var pickerCheckIn = datepicker('#inputCheckIn');
-            var pickerCheckOut = datepicker('#inputCheckOut');
+            // var pickerCheckIn = datepicker('#inputCheckIn');
+            // var pickerCheckOut = datepicker('#inputCheckOut');
 
             // Update nav links on scroll
 $('#tm-top-bar').singlePageNav({

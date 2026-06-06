@@ -151,9 +151,9 @@ async function renderFlightDetails() {
             <h2>${flight.status}</h2>
             <p>Secure your seat now.</p>
 
-            <button class="btn-book-flight" onclick="createBooking('${flight.id}')">
-                Buy Ticket
-            </button>
+           <a class="btn-book-flight" href="checkout.html?id=${flight.id}">
+                 Buy Ticket
+                </a>
         </div>
 
         <div class="text-center mt-4">
