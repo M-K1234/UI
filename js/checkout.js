@@ -15,9 +15,14 @@ function formatDate(dateStr) {
     });
 }
 
-function getFlightIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("id");
+function getAllQueryParams() {
+  const params = new URLSearchParams(window.location.search);
+  const entries = params.entries(); // Iterator over [key, value]
+  const result = {};
+  for (const [key, value] of entries) {
+    result[key] = value;
+  }
+  return result;
 }
 
 async function fetchFlightById(id) {
@@ -68,8 +73,11 @@ function calculateTotal() {
 }
 
 async function renderCheckout() {
-    const flightId = getFlightIdFromUrl();
+    const allQueryParams = getAllQueryParams();
+    const flightId = allQueryParams.flightId;
     const container = document.getElementById("checkoutDetails");
+
+    console.log(flightId);
 
     if (!flightId) {
         container.innerHTML = `<h2>Missing flight ID</h2>`;
@@ -94,7 +102,7 @@ async function renderCheckout() {
             </a>
         </div>
 
-        <h1 class="checkout-title">Checkout</h1>
+        <h1 class="checkout-title">Booking created! <br><br> Checkout</h1>
 
         <div class="checkout-box">
             <h3>${flight.flightNumber} - ${flight.airline}</h3>
@@ -151,76 +159,51 @@ async function renderCheckout() {
     `;
 }
 
-async function payNow(flightId) {
+async function payNow() {
+
+    const allQueryParams = getAllQueryParams();
+    console.log(allQueryParams);
+    const bookingId = allQueryParams.bookingId;
+    const email = allQueryParams.email;
+    const phone = allQueryParams.phone;
+
+    let idempotencyKey = localStorage.getItem(`idempotencyKey-${bookingId}`);
+        
+    if (!idempotencyKey) 
+        {
+            // Generer og gem ny idempotency key, hvis den ikke eksisterer
+            idempotencyKey = `checkout-${bookingId}-${Date.now()}`;
+            localStorage.setItem(`idempotencyKey-${bookingId}`, idempotencyKey);
+        }
+
     const token = localStorage.getItem("access_token");
     const user = JSON.parse(localStorage.getItem("user_info") || "{}");
-
     if (!token) {
         alert("You must be logged in to pay.");
         window.location.href = "login.html";
         return;
     }
-
     const baggageWeight = Number(document.getElementById("baggageWeight").value || 0);
     const baggagePrice = baggageWeight * BAGGAGE_PRICE_PER_KG;
     const totalPrice = TICKET_PRICE + baggagePrice;
-
     try {
-        const bookingRequest = {
-            flightId: flightId,
-            returnFlightId: null,
-            isOneWay: true,
-            seatClass: 0,
-            contactEmail: user.email || "test@example.com",
-            contactPhone: "+4512345678",
-            ticketPrice: totalPrice,
-            passengers: [
-                {
-                    firstName: user.given_name || "Test",
-                    lastName: user.family_name || "User",
-                    dateOfBirth: "1995-01-01T00:00:00Z",
-                    passportNumber: "TEST123456",
-                    nationality: "Denmark",
-                    isLeadPassenger: true,
-                    hasExtraBaggage: baggageWeight > 0
-                }
-            ]
-        };
+        // Check om idempotency key allerede er gemt for denne booking
 
-        const bookingResponse = await fetch(
-            "http://localhost:5000/api/Booking",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(bookingRequest)
-            }
-        );
-
-        const bookingText = await bookingResponse.text();
-
-        if (!bookingResponse.ok) {
-            alert("Booking failed: " + bookingText);
-            return;
-        }
-
-        const booking = JSON.parse(bookingText);
-
+        // Betalingskald med idempotencyKey
         const paymentResponse = await fetch(
             "http://localhost:5000/api/payment/stripe/checkout",
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Idempotency-Key": idempotencyKey
                 },
                 body: JSON.stringify({
-                    BookingId: booking.bookingId,
+                    BookingId: bookingId,
                     UserId: user.sub,
                     TotalPrice: totalPrice,
-                    ContactEmail: bookingRequest.contactEmail,
-                    ContactPhone: bookingRequest.contactPhone
+                    ContactEmail: email,
+                    ContactPhone: phone
                 })
             }
         );

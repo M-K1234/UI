@@ -1,44 +1,44 @@
-const bookings = [
-    {
-        bookingId: 1001,
-        flightId: 1,
-        from: "Copenhagen",
-        to: "Bangkok",
-        departureAirport: "CPH",
-        arrivalAirport: "BKK",
-        departureTime: "2018-04-18 13:00:00",
-        arrivalTime: "2018-04-19 15:00:00",
-        logo: "bkk.png",
-        price: 499,
-        status: "confirmed"
-    },
-    {
-        bookingId: 1002,
-        flightId: 3,
-        from: "Copenhagen",
-        to: "Paris",
-        departureAirport: "CPH",
-        arrivalAirport: "CDG",
-        departureTime: "2018-04-20 07:15:00",
-        arrivalTime: "2018-04-20 09:30:00",
-        logo: "cdg.jpg",
-        price: 249,
-        status: "pending"
-    },
-    {
-        bookingId: 1003,
-        flightId: 8,
-        from: "Copenhagen",
-        to: "Tokyo",
-        departureAirport: "CPH",
-        arrivalAirport: "HND",
-        departureTime: "2018-04-25 10:00:00",
-        arrivalTime: "2018-04-26 08:00:00",
-        logo: "hnd.svg",
-        price: 699,
-        status: "confirmed"
-    }
-];
+// const bookings = [
+//     {
+//         bookingId: 1001,
+//         flightId: 1,
+//         from: "Copenhagen",
+//         to: "Bangkok",
+//         departureAirport: "CPH",
+//         arrivalAirport: "BKK",
+//         departureTime: "2018-04-18 13:00:00",
+//         arrivalTime: "2018-04-19 15:00:00",
+//         logo: "bkk.png",
+//         price: 499,
+//         status: "confirmed"
+//     },
+//     {
+//         bookingId: 1002,
+//         flightId: 3,
+//         from: "Copenhagen",
+//         to: "Paris",
+//         departureAirport: "CPH",
+//         arrivalAirport: "CDG",
+//         departureTime: "2018-04-20 07:15:00",
+//         arrivalTime: "2018-04-20 09:30:00",
+//         logo: "cdg.jpg",
+//         price: 249,
+//         status: "pending"
+//     },
+//     {
+//         bookingId: 1003,
+//         flightId: 8,
+//         from: "Copenhagen",
+//         to: "Tokyo",
+//         departureAirport: "CPH",
+//         arrivalAirport: "HND",
+//         departureTime: "2018-04-25 10:00:00",
+//         arrivalTime: "2018-04-26 08:00:00",
+//         logo: "hnd.svg",
+//         price: 699,
+//         status: "confirmed"
+//     }
+// ];
 
 function formatDate(dateStr) {
     const date = new Date(dateStr);
@@ -96,22 +96,22 @@ function createBookingCard(booking) {
     `;
 }
 
-function renderBookings() {
-    const container = document.getElementById("bookingsContainer");
+// function renderBookings() {
+//     const container = document.getElementById("bookingsContainer");
 
-    if (!bookings.length) {
-        container.innerHTML = `
-            <div class="flight-info-box">
-                <h3>No bookings found</h3>
-                <p>You have not booked any flights yet.</p>
-                <a href="../index.html" class="btn btn-primary mt-3">Find flights</a>
-            </div>
-        `;
-        return;
-    }
+//     if (!bookings.length) {
+//         container.innerHTML = 
+//             <div class="flight-info-box">
+//                 <h3>No bookings found</h3>
+//                 <p>You have not booked any flights yet.</p>
+//                 <a href="../index.html" class="btn btn-primary mt-3">Find flights</a>
+//             </div>
+//         ;
+//         return;
+//     }
 
-    container.innerHTML = bookings.map(createBookingCard).join("");
-}
+//     container.innerHTML = bookings.map(createBookingCard).join("");
+// }
 
 document.querySelector(".tm-current-year").textContent = new Date().getFullYear();
 

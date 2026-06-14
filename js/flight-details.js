@@ -151,9 +151,10 @@ async function renderFlightDetails() {
             <h2>${flight.status}</h2>
             <p>Secure your seat now.</p>
 
-           <a class="btn-book-flight" href="checkout.html?id=${flight.id}">
-                 Buy Ticket
-                </a>
+<button class="btn-book-flight" onclick="createBooking('${flight.id}')">
+    Book flight 
+</button>
+
         </div>
 
         <div class="text-center mt-4">
@@ -216,54 +217,17 @@ if (!bookingResponse.ok) {
     alert("Booking failed: " + bookingResponse.status + " - " + bookingText);
     return;
 }
-
         const booking = JSON.parse(bookingText);
 
-        console.log("Booking created:", booking);
-
-        // ── Create Stripe checkout ──────────────────────
-        const paymentResponse = await fetch(
-            "http://localhost:5000/api/payment/stripe/checkout",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    BookingId: booking.bookingId,
-                    UserId: user.sub,
-                    TotalPrice: booking.totalPrice,
-                    ContactEmail: bookingRequest.contactEmail,
-                    ContactPhone: bookingRequest.contactPhone
-                })
-            }
-        );
-
-        const paymentText = await paymentResponse.text();
-
-        if (!paymentResponse.ok) {
-            console.error("Payment error:", paymentText);
-            alert("Payment failed: " + paymentText);
-            return;
-        }
-
-        const payment = JSON.parse(paymentText);
-
-        console.log("Payment session:", payment);
-
-        if (!payment.url) {
-            alert("Stripe checkout URL missing.");
-            return;
-        }
-
-        // ── Redirect to Stripe ──────────────────────────
-        window.location.href = payment.url;
+        window.location.href = `checkout.html?flightId=${flightId}&bookingId=${booking.bookingId}&email=${user.email}&phone=${user.phone_number}`;
 
     } catch (error) {
         console.error(error);
         alert("Unexpected error: " + error.message);
     }
 }
+
+
 
 function goBack() {
     if (document.referrer) {
